@@ -1,0 +1,13 @@
+[project]
+name = "cookable-app"
+version = "1.0.0"
+description = "AI-powered recipe recommendation system using Streamlit and K-Means clustering to match recipes with available ingredients"
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["streamlit", "recipe", "machine-learning", "clustering", "recommendation-system"]
+dependencies = [
+    "numpy>=2.3.5",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.7.2",
+    "streamlit>=1.51.0",
+]

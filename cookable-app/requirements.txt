@@ -1,0 +1,16 @@
+# Cookable App - Python Dependencies
+# =================================
+#
+# NOTE: This project uses UV as the package manager.
+# This requirements.txt is provided as a fallback for pip users.
+#
+# To install with UV (recommended):
+#   uv add streamlit scikit-learn pandas numpy
+#
+# To install with pip (fallback):
+#   pip install -r requirements.txt
+
+streamlit>=1.28.0
+scikit-learn>=1.3.0
+pandas>=2.0.0
+numpy>=1.24.0
