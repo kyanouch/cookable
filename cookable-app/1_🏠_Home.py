@@ -1,7 +1,7 @@
 """
 COOKABLE - Main Landing Page
 =============================
-This is the main entry point for the Cookable web application.
+This is the main entry point for the cookable web application.
 It displays the hero section, concept explanation, customer reviews, and about section.
 
 The app uses Streamlit's page navigation to allow users to navigate to the
