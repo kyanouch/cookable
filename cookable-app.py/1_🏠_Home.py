@@ -156,7 +156,7 @@ st.markdown("---")
 # We had fun with emojis once we learned that you can use them in Stremlit. They make the page look more colorful. 
 st.write("#### 🎯 What is Cookable?")
 st.write("Cookable is your go-to AI-Fridge. It suggests recipes based on what you have in the fridge.")
-st.write("STOP WAISTING BRAIN POWER ON DECIDING WHAT TO COOK - SAVE IT FOR UNIVERSITY INSTEAD!")
+st.write("Stop wasting brain power on deciding what to cook - save it for university instead!")
 st.write("")
 st.write("")
 st.write("#### 🧠 Why Cookable?")
@@ -350,7 +350,7 @@ st.write("")
 
 st.write(
     "Cookable was born from a simple observation: students waste too much time and brain power deciding what to cook. "
-    "What started as a practical idea quickly turned into an obsession - we wanted to make students succeed by removing the everyday pain of starring at the fridge like it's an assessment math exam."
+    "What started as a practical idea quickly turned into an obsession - we wanted to make students succeed by removing the everyday pain of starring at the fridge like it's an assessment math exam. "
     "The original goal was modest: build a smart app that helps people discover what they can cook based on the ingredients they already have. "
     "But somewhere between the first finished code snippets and the fiftieth error message, the idea took on a life of its own."
 )
