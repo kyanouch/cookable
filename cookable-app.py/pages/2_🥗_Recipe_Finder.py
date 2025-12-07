@@ -1,52 +1,43 @@
-"""
-COOKABLE - Recipe Finder Page
-==============================
+# COOKABLE - Recipe Finder Page
+# This page is the core interface for users of our project.  
+# Users can select their available ingredients and see matching recipe recommendations
+# The way it works:
+# User selects ingredients from checkboxes with emoji indicators
+# Selected ingredients are stored in session state
+# User clicks "Find My Recipes" button to start the search
+# Results appear directly on the same page below the ingredient selection
+# The user can modify their selections and search again for updated results
 
-Purpose:
---------
-This page provides an integrated ingredient selection and recipe recommendation experience.
-Users can select their available ingredients and instantly see matching recipe recommendations
-without navigating to a different page.
+# SESSION STATE EXPLANTION: 
+# We got recommended (by AI) to use the function 'session state' of streamlit because our webiste is interactive.
+# In order to keep the selected elements after reruning the app when the user clicks on the find recipes button. Without it a rerun will use the selection. 
+# Information point (this is a pain to understand): https://youtu.be/92jUAXBmZyU?si=dZTb0-M9jz46sW7I https://youtu.be/5l9COMQ3acc?si=hy9EM9e0f2ihkIj8 
 
-How it works:
--------------
-1. User selects ingredients from checkboxes with emoji indicators
-2. Selected ingredients are stored in session state
-3. User clicks "Find My Recipes" button to trigger the search
-4. Results appear dynamically on the same page below the ingredient selection
-5. User can modify their selections and search again for updated results
-
-Technical Architecture:
------------------------
-- Session state management for persistent ingredient selection
-- Conditional rendering of results based on search trigger flag
-- Cached ML models for optimal performance
-- Real-time recipe matching using hybrid scoring algorithm
-- Single-page experience with smooth state transitions
-"""
-
+#_____________
+# IMPORTS
 import streamlit as st
 import os
 import sys
+# These two imports allow us to import our logic modules (the backend of the app). These are two built-in Python modules that help navigate file paths and system paths inside our app. 
 
-# Add parent directory to path so we can import our logic modules
+# This line tells Python to look the upper folder in the folder hierarchy. So we can import from the logic folder. 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Our machine learning 
 from logic.clustering import load_clusterer
+# The recipe matching system
 from logic.recipe_matching import create_matcher
 
-# ========================================
+#_________________
 # PAGE CONFIGURATION
-# ========================================
 st.set_page_config(
     page_title="Recipe Finder - COOKABLE",
     layout="wide",
     page_icon="🥗"
 )
 
-# ========================================
-# CUSTOM CSS FOR CONSISTENCY
-# ========================================
+# __________________
+# CUSTOMIZING THE PAGE STYLE
 st.markdown(
     """
     <style>
@@ -56,11 +47,6 @@ st.markdown(
             text-align: center;
             margin: 0;
             color: #15616D;
-        }
-
-        .section-divider {
-            border-top: 3px solid #15616D;
-            margin: 40px 0;
         }
 
         .ingredient-box {
@@ -103,9 +89,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ========================================
+# _______________
 # PAGE HEADER
-# ========================================
+# using HTML to create a big title with an emoji. Each time something is written in HTML or CSS, it's AI generated. 
+# We did quite some vibe coding to make the page look good as the default streamlit style felt limited. 
 st.markdown(
     """
     <div class="big-title">🥗 What's in Your Fridge?</div>
@@ -115,15 +102,11 @@ st.markdown(
 
 st.write("")
 st.write("#### Select all the ingredients you currently have available:")
-st.write("Don't worry about quantities - we just need to know what you have! 🎯")
 st.write("")
 
-# ========================================
+# _______________
 # INGREDIENT LIST WITH EMOJIS
-# ========================================
-# Comprehensive list of common cooking ingredients
-# Each ingredient is paired with an appropriate emoji for visual recognition
-# Format: (ingredient_name, emoji)
+# We created this list by asking for the most common ingredients in recipes. 
 ingredients_list = [
     ("Eggs", "🥚"),
     ("Flour", "🌾"),
@@ -152,19 +135,18 @@ ingredients_list = [
     ("Bacon", "🥓"),
 ]
 
-# ========================================
+# ___________________
 # SESSION STATE INITIALIZATION
-# ========================================
-# Initialize session state for storing selected ingredients and search trigger
+# Initializing the session state variables to store what the user has selected. 
 if "selected_ingredients" not in st.session_state:
     st.session_state.selected_ingredients = []
-
+# if there is not prior selected ingredients, we created as an empty list.
 if "show_results" not in st.session_state:
     st.session_state.show_results = False
+# If there is ne show results variable in the session state, we created it ans set to false, so it doesn't show results yet. 
 
-# ========================================
+# ________________
 # INGREDIENT SELECTION UI
-# ========================================
 st.write("---")
 
 # Create a container for better organization
@@ -262,8 +244,7 @@ st.write("- If a recipe needs 1-2 extra ingredients, we'll let you know (time to
 
 if st.session_state.show_results and len(st.session_state.selected_ingredients) > 0:
 
-    # Visual divider
-    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+    st.write("---")
 
     # ========================================
     # RESULTS HEADER
