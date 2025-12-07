@@ -407,108 +407,62 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
                 st.write("---")
 
         # ========================================
-        # EDUCATIONAL SECTION: HOW IT WORKS
+        # EDUCATIONAL SECTION --> I really like expanders, it makes the website super interactive and professional, so I decided to put an expander explaining how it works. 
+        # it also portays our plan, what we were pursuing when we finally understood what exactly we have to code. This plan was suggested to us by AI in long dialogs to find the best logic for the matching. 
         st.write("### 🎓 How Does This Work?")
 
-        with st.expander("📚 Learn About Our Algorithm"):
+        with st.expander("Click if you want to learn more about the algorithm"):
             st.write("#### The Cookable Recipe Matching Algorithm")
             st.write("")
-
             st.write("""
-            Our recommendation system combines **rule-based filtering** with **machine learning** to find the best recipes for you.
-            Here's how it works step by step:
+            Our recommendation system combines explicit rules and machine learning to find the best recipes.
+            Here's how it works:
             """)
 
-            st.write("#### Step 1: Filtering 🔍")
+            st.write("#### Step 1: 🔍 Filtering")
             st.write("""
-            - We first filter recipes that you can **actually make** with your ingredients
-            - We allow up to **2 missing ingredients** (you can borrow from a neighbor!)
-            - We assume **salt, pepper, oil, and butter** are always available
+            - We first filter recipes that you can actually make with your ingredients by allowing up to two missing ingredients. 
+            - We assume that salt, pepper, oil, and butter are always available for simplification purposes. 
             """)
 
-            st.write("#### Step 2: Base Scoring 📊")
+            st.write("#### Step 2: 📊 Rules-based score")
             st.write("""
-            For each feasible recipe, we calculate a base score using:
 
-            1. **Ingredient Match Ratio (40% weight)**
-               - What percentage of the recipe's ingredients do you have?
-               - Higher is better!
+            1. Ingredient Match Ratio (40% weight)
+               - The higher the percentage of ingredients that the user has - the better.
 
-            2. **Missing Ingredient Penalty (30% weight)**
-               - Fewer missing ingredients = higher score
-               - 0 missing → full score, 1-2 missing → reduced score
+            2. Missing Ingredient Penalty (30% weight)
+               - The fewer the number of missing ingredients - the better. 
 
-            3. **Cooking Time Factor (10% weight)**
-               - Shorter cooking time = small bonus
-               - Busy people want quick meals!
+            3. Cooking Time Factor (10% weight)
+               - Shorter cooking time - small bonus.
 
-            4. **Recipe Rating (20% weight)**
+            4. Recipe Rating (20% weight)
                - Higher rated recipes get a boost
                - Quality matters!
             """)
 
             st.write("#### Step 3: Machine Learning Boost 🤖")
             st.write("""
-            We use **K-Means clustering** (unsupervised machine learning) to group similar recipes together.
-
-            - Recipes are grouped into **5 clusters** based on their ingredients
-            - Each cluster gets a **popularity score** (average rating of all recipes in that cluster)
-            - Recipes in popular clusters get a **bonus boost**
-
-            **Why clustering helps:**
-            - If you like pasta dishes, we recommend other pasta dishes from the same cluster
-            - Popular recipe types get prioritized
-            - This improves user satisfaction!
+            We use K-Means clustering to group similar recipes together.
+            - Recipes are grouped into 5 clusters based on their ingredients
+            - Each cluster gets a popularity score (average rating of all recipes in that cluster)
+            - Recipes in popular clusters get a bonus boost
             """)
 
-            st.write("#### Step 4: Final Score 🎯")
+            st.write("#### Step 4: Final Score")
             st.write("""
             We combine everything into a final score:
 
-            ```
             Final Score = 0.6 × Base Score + 0.4 × ML Boost
 
             where:
             ML Boost = 0.2 × Recipe Rating + 0.2 × Cluster Popularity
-            ```
 
-            The recipes are then **ranked by final score**, and the top 5 are shown to you!
             """)
 
             st.write("")
 
-        # ========================================
-        # CLUSTERING INSIGHTS
-        # ========================================
-        st.write("### 🔬 Recipe Clustering Insights")
-
-        with st.expander("🤖 View Clustering Analysis"):
-            st.write("""
-            Our AI has automatically grouped all recipes into **5 clusters** based on their ingredients.
-            Recipes in the same cluster have similar ingredients and cooking styles.
-            """)
-
-            st.write("")
-            st.write("#### Cluster Summary:")
-
-            # Get cluster summary from clusterer
-            cluster_summary = clusterer.get_cluster_summary()
-
-            for cluster_id, info in cluster_summary.items():
-                st.write(f"**Cluster {cluster_id}:**")
-                st.write(f"- Number of recipes: {info['num_recipes']}")
-                st.write(f"- Average rating: {info['avg_rating']:.2f}/5")
-                st.write(f"- Popularity score: {info['popularity_score']:.2%}")
-                st.write(f"- Example recipes: {', '.join(info['example_recipes'][:2])}")
-                st.write("")
-
-            st.write("")
-            st.info("""
-            💡 **How to read this:**
-            - Higher **popularity score** means the cluster contains highly-rated recipes
-            - Recipes in popular clusters get a **small boost** in recommendations
-            - This helps us recommend tried-and-true recipe styles!
-            """)
     # __________________
     # TRY AGAIN 
     st.write("---")
