@@ -1,20 +1,14 @@
-"""
-COOKABLE - Main Landing Page
-=============================
-This is the main entry point for the cookable web application.
-It displays the hero section, concept explanation, customer reviews, and about section.
+# COOKABLE - Main Landing Page
+# This is the main entry point for the cookable web application.
+# It contains the hero section, the concept explanation, some customer reviews, and the about section.
 
-The app uses Streamlit's page navigation to allow users to navigate to the
-Recipe Input page where they can select ingredients.
-"""
 
 import streamlit as st
 
-# ========================================
+# ________________
 # PAGE CONFIGURATION
-# ========================================
-# Set the page to use the full browser width instead of Streamlit's default centered layout
-# This gives us more space for our content and makes the UI look more modern
+# the following code snippet was added to make the app use full width of the window, as the default streamlit setting has margins.
+
 st.set_page_config(
     page_title="COOKABLE - AI Recipe Matcher",
     layout="wide",
@@ -22,11 +16,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed"  # Hide sidebar on landing page
 )
 
-# ========================================
-# CUSTOM CSS STYLING
-# ========================================
-# We use custom CSS to create a more polished, professional look
-# This includes large titles, styled boxes, responsive font sizes, and consistent button styling
+#______________
+# CUSTOM STYLING USING HTML and CSS
+# To make our website look nicer, we used CSS to style some headings, the customer review carousel and buttons. 
+# This section is heavily AI assisted as we do not know how to code in HTML and CSS. We understand that one uses HTML to arrange the elemetns and CSS to style them, so style="width: 100%; height: 200px" is CSS code inside HTML element.
 st.markdown(
     """
     <style>
@@ -79,10 +72,12 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ========================================
+#___________
 # HERO SECTION
-# ========================================
-# The hero section is the first thing users see - it needs to be impactful
+# Hero section - title and slogan. The first thing users see when they visit the app.
+# Youtube tutorials recommended to use some images to make it more impactful, so we added Lottie files. 
+
+# Using HTML and CSS again to style the main title. 
 st.markdown(
     """
     <div style="width: 100%;">
@@ -92,17 +87,15 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Add some vertical spacing
+# Adding some spacing with a blank empty string.
 st.write("")
 
-# ========================================
-# MAIN SLOGAN / TAGLINE WITH LOTTIE ANIMATIONS
-# ========================================
-# We use a 3-column layout with Lottie animations on both sides of the slogan
-# The Lottie files show food animations to make the page more engaging
+
+# SLOGAN WITH LOTTIE FILES
+# Creating three columns to split the page and fit our lottie files with the slogan. 
 col1, col2, col3 = st.columns([1, 2, 1])
 
-# Left Lottie animation
+# Left Lottie using HTML (again we used AI to help). 
 with col1:
     st.components.v1.html(
         """
@@ -121,7 +114,8 @@ with col1:
         height=220,
     )
 
-# Center slogan
+# Slogan in the center
+# Using HTML becasue we want to put the text nicely in a box. --> again AI assisted and suggested.  
 with col2:
     st.markdown(
         """
@@ -134,7 +128,7 @@ with col2:
         unsafe_allow_html=True,
     )
 
-# Right Lottie animation
+# Right Lottie
 with col3:
     st.components.v1.html(
         """
@@ -153,46 +147,40 @@ with col3:
         height=220,
     )
 
-# Horizontal divider to separate sections
+# Horizontal line to separate the sections. 
 st.markdown("---")
 
-# ========================================
+# ____________
 # CONCEPT EXPLANATION
-# ========================================
-# This section explains what Cookable does and why it's useful
+# To create a nicer user experience, we explain the concept and add some reviews. We got inspired by some startup landing pages and jargon. 
+# We had fun with emojis once we learned that you can use them in Stremlit. They make the page look more colorful. 
 st.write("#### 🎯 What is Cookable?")
-st.write(
-    "Cookable is your go-to AI-Fridge. It suggests recipes based on what you have in the fridge. "
-    "Stop wasting brain power on deciding what to eat every day."
-)
-
+st.write("Cookable is your go-to AI-Fridge. It suggests recipes based on what you have in the fridge.")
+st.write("STOP WAISTING BRAIN POWER ON DECIDING WHAT TO COOK - SAVE IT FOR UNIVERSITY INSTEAD!")
 st.write("")
 st.write("")
-
 st.write("#### 🧠 Why Cookable?")
 st.write(
-    "An average Cookable user saves up to 700 Hz of brain power daily, "
-    "which they can direct into studying computer science instead."
+    "An average Cookable user saves up to 700 Hz of brain power daily - which they can direct into studying computer science instead."
 )
 
 st.markdown("---")
 
-# ========================================
+# ___________________
 # CUSTOMER REVIEWS CAROUSEL
-# ========================================
-# This creates a horizontally scrolling carousel of customer testimonials
-# The carousel automatically animates using CSS keyframes
+# This section is heavily AI assisted as we do not know how to create carousels using HTML.  
+# This carousel automatically animates using CSS (-thanks AI!)
 st.write("##### 💬 What our users are saying:")
 
-# Define customer quotes and their authors
+# Here are the quotes and authors.
 quotes = [
-    ("Cookable got dinner on the table in 10 minutes.", "Justus"),
-    ("Saved me when I had no idea what to cook with what I had.", "Marie"),
-    ("Finally stopped doom‑scrolling recipes.", "Thomas"),
-    ("Takes whatever's in my fridge and makes it work.", "Erika"),
+    ("Cookable got dinner on the table in 10 minutes.", "BWL Justus"),
+    ("Saved me when I had no idea what to cook with what I had.", "BWL Marie"),
+    ("Finally stopped doom‑scrolling recipes.", "Thomas Bieger"),
+    ("Takes whatever's in my fridge and makes it work.", "Erika the fly"),
 ]
 
-# Build HTML for each quote card with modern styling
+# These are the cards from the carousel - using HTML and CSS for styling. 
 cards_html = []
 for text, author in quotes:
     cards_html.append(
@@ -209,10 +197,10 @@ for text, author in quotes:
         """
     )
 
-# Duplicate the cards to create seamless infinite scroll effect
+# Duplicating the cards to create a loop effect. 
 track_html = "".join(cards_html) * 2
 
-# Complete carousel HTML with modern CSS
+# Rest of carousel animation - please ask codex for any additional questions. 
 carousel_html = f"""
 <style>
     .carousel-shell {{
@@ -330,55 +318,49 @@ carousel_html = f"""
 </div>
 """
 
-# Render the carousel using Streamlit's HTML component
 st.components.v1.html(carousel_html, height=360, scrolling=False)
 
 st.markdown("---")
 
-# ========================================
+# __________________
 # CALL TO ACTION
-# ========================================
-# This button encourages users to start using the app
-#
-# Technical Note:
-# ---------------
-# We use Streamlit's native navigation with custom CSS for beautiful styling
-st.write("### 🚀 Ready to find your next meal?")
-st.write("Select the ingredients you have, and let our AI recommend the perfect recipes for you!")
+# This button to access the page where all the magic happens :)
 
+st.write("### 👩‍🍳 Ready to find your next meal?")
+st.write("Select the ingredients you have, and let your brain rest for a while.")
+
+#Spacing
 st.write("")
 
-# Create centered button layout
-# Button styling is already applied globally at the top of the page
+# Creating columns to center the button. 
+# Button styling is already applied globally at the top of the page.
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    # Use Streamlit's native button with custom styling
+    # Using the streamlit button funstion to switch pages. 
     if st.button("🥘 Start Cooking", use_container_width=True):
         st.switch_page("pages/2_🥗_Recipe_Finder.py")
 
 st.markdown("---")
 
-# ========================================
+# _________________
 # ABOUT SECTION
-# ========================================
-# The story behind Cookable - makes it more personal and engaging
-st.write("##### 📖 About Cookable")
+# I tried to imitate a startup story text (and make fun of it a bit). 
+st.write("##### 🥸 About Cookable")
 st.write("")
 
 st.write(
-    "Cookable was born from a simple observation: people waste too much time deciding what to cook. "
-    "What started as a practical idea quickly turned into an obsession. The original goal was modest: "
-    "build a smart app that helps people discover what they can cook based on the ingredients they already have. "
-    "But somewhere between the first prototype and the tenth bug that refused to die, the idea took on a life of its own."
+    "Cookable was born from a simple observation: students waste too much time and brain power deciding what to cook. "
+    "What started as a practical idea quickly turned into an obsession - we wanted to make students succeed by removing the everyday pain of starring at the fridge like it's an assessment math exam."
+    "The original goal was modest: build a smart app that helps people discover what they can cook based on the ingredients they already have. "
+    "But somewhere between the first finished code snippets and the fiftieth error message, the idea took on a life of its own."
 )
 
 st.write("")
 
 st.write(
     "Several weeks of intense development followed. There were moments of triumph when a feature finally worked, "
-    "and moments of challenge when nothing made sense at 3 a.m. The problem Cookable was trying to solve felt "
-    "too real to ignore: people wasting time and mental energy simply because they didn't know what they could "
-    "cook with what they had. Every iteration made the app smarter, faster, and more useful."
+    "and moments of challenge when nothing made sense at 3 a.m. But the problem Cookable was trying to solve felt too real to ignore: "
+    "people wasting time and mental energy simply because they didn't know what they could cook with what they had.
 )
 
 st.write("")
@@ -386,13 +368,13 @@ st.write("")
 st.write(
     "What began as a simple idea slowly transformed into a real product with real users and real impact. "
     "Today, Cookable stands as a reminder that some of the best solutions don't begin with grand ambition—"
-    "but with an empty fridge, a busy person, and a simple question: What can I cook right now?"
+    "but with an empty fridge, a normal student at HSG, and a simple question: What can I cook right now?"
 )
 
 st.write("")
 st.write("**Meet the team** 👨‍💻👩‍💻")
 
-# Footer
+# Footer done with HTML and CSS again. Idea suggested in youtube videos. 
 st.markdown("---")
 st.markdown(
     "<div style='text-align: center; color: #888; padding: 20px;'>"
