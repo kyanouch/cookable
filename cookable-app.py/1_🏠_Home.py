@@ -360,7 +360,7 @@ st.write("")
 st.write(
     "Several weeks of intense development followed. There were moments of triumph when a feature finally worked, "
     "and moments of challenge when nothing made sense at 3 a.m. But the problem Cookable was trying to solve felt too real to ignore: "
-    "people wasting time and mental energy simply because they didn't know what they could cook with what they had.
+    "people wasting time and mental energy simply because they didn't know what they could cook with what they had."
 )
 
 st.write("")
