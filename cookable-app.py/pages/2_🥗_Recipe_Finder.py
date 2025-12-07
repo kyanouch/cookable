@@ -140,36 +140,38 @@ ingredients_list = [
 # Initializing the session state variables to store what the user has selected. 
 if "selected_ingredients" not in st.session_state:
     st.session_state.selected_ingredients = []
-# if there is not prior selected ingredients, we created as an empty list.
+# if there is no prior selected ingredients, we created an empty list.
+
 if "show_results" not in st.session_state:
     st.session_state.show_results = False
-# If there is ne show results variable in the session state, we created it ans set to false, so it doesn't show results yet. 
+# If there is no show results variable in the session state, we created it and set to false, so it doesn't show results yet. 
 
 # ________________
 # INGREDIENT SELECTION UI
 st.write("---")
 
-# Create a container for better organization
+# Creating a container for better organization of the code --> keeps elements of a section together
+# To loop through the ingredients that are displayed in three columns, we used arithmetics and per_column variable to divide and loop throuh ingredients correctly.
+# This per_column system was suggested by the same software engineer friend that helped us the setup configuration.  
 with st.container():
-    # We'll display checkboxes in 3 columns for better space utilization
+    # We display checkboxes in 3 columns for better layout
     col1, col2, col3 = st.columns(3)
 
-    # Divide ingredients into 3 groups for the 3 columns
+    # Dividing ingredients into 3 groups for the 3 columns, using the Python floor division operator that gives back a whole number. 
     total_ingredients = len(ingredients_list)
-    per_column = (total_ingredients + 2) // 3  # Divide evenly with rounding up
+    per_column = (total_ingredients + 2) // 3 
+    # This last formula ensures we evenely distribute ingredients across columns. (the +2 ensures rounding up when not divisible by 3)
 
-    # Track which ingredients are selected
+    # Tracking which ingredients are selected
     selected = []
 
-    # Column 1
     with col1:
-        for i in range(0, per_column):
-            if i < len(ingredients_list):
-                ingredient, emoji = ingredients_list[i]
-                if st.checkbox(f"{emoji} {ingredient}", key=f"ing_{i}"):
-                    selected.append(ingredient)
+        for i in range(0, per_column): # looping through the first column of ingredients
+            if i < len(ingredients_list): # without this line python gives an error - it makes sure that the loop doesn't run out of range of the list
+                ingredient, emoji = ingredients_list[i] # grabbing tuple of selected element
+                if st.checkbox(f"{emoji} {ingredient}", key=f"ing_{i}"): #giving each checkbox a unique identifier so that the value is stored correctly in sessions state. 
+                    selected.append(ingredient) # Adding selected ingredients to the list of selected ingredients. 
 
-    # Column 2
     with col2:
         for i in range(per_column, per_column * 2):
             if i < len(ingredients_list):
@@ -177,7 +179,6 @@ with st.container():
                 if st.checkbox(f"{emoji} {ingredient}", key=f"ing_{i}"):
                     selected.append(ingredient)
 
-    # Column 3
     with col3:
         for i in range(per_column * 2, total_ingredients):
             if i < len(ingredients_list):
@@ -187,68 +188,68 @@ with st.container():
 
 st.write("---")
 
-# ========================================
+# ___________________
 # SELECTED INGREDIENTS SUMMARY
-# ========================================
 st.write("### 📋 Your Selected Ingredients:")
 
+# if ... else statement to show different messages to orient the user 
 if selected:
-    # Update session state with current selection
+    # Updating session state with current selection
     st.session_state.selected_ingredients = selected
 
-    # Display in a nice formatted way
+    # Display in a nice formatted way - green message, showing number in bold using ** 
     st.success(f"✅ You have selected **{len(selected)}** ingredient(s):")
-    st.write(", ".join(selected))
+    st.write(", ".join(selected)) # used AI to find the way to display it with commas 
 else:
     # No ingredients selected yet
     st.info("👆 Check the boxes above to select your ingredients")
     st.session_state.selected_ingredients = []
-
+# https://cheat-sheet.streamlit.app/ --> helped us find the different messages 
 st.write("")
 
-# ========================================
+# ________________
 # FIND RECIPES BUTTON
-# ========================================
+# interaction with user to start the recipe search
+# To find how to best guide a user through the website we used existing websites as templates and generated possible user - UI dialogs with AI (our own versions felt weird and not prefessional).
 st.write("### 🎯 Ready to find recipes?")
 
 if len(selected) > 0:
-    st.write(f"Great! We'll find the best recipes based on your {len(selected)} ingredient(s).")
+    st.write(f"Great! We'll find the best recipes based on your {len(selected)} ingredient(s).") # progressing with the user dialog and making sure ingreditents are selected. 
 
-    # Create a centered button
+    # Creating a centered button
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        # Use Streamlit button which properly handles session state
-        if st.button("🔍 Find My Recipes", use_container_width=True):
-            # Set flag to show results below
+        # Using button which properly handles session state
+        if st.button("🔍 Find My Recipes", use_container_width=True): #to stretch the button full width we use the boolean option use_container_width=True - AI made and suggested
+            # Using booleans to control the button and show results thanks to session state 
             st.session_state.show_results = True
-            # Force a rerun to display results
+            # Rerun to display results
             st.rerun()
 else:
-    st.warning("⚠️ Please select at least one ingredient to continue")
+    st.warning("⚠️ Please select at least one ingredient to continue") # --> https://cheat-sheet.streamlit.app/
     st.session_state.show_results = False
 
-# ========================================
-# HELPFUL TIPS SECTION
-# ========================================
 st.write("---")
+
+# _____________________
+# FOR SIMPLICITY PURPOSES 
+# We wanted to keep things a bit simpler for us, so we don't care about quantites, and we assume that the most basic ingredients are always available. 
 st.write("### 💡 Tips:")
-st.write("- **Salt, pepper, oil, and butter** are assumed to be available in unlimited amounts")
+st.write("- Salt, pepper, oil, and butter are assumed to be available all the time.")
 st.write("- We don't worry about exact quantities - just what you have!")
-st.write("- Select all ingredients you have available, even if you're not sure you'll use them")
-st.write("- If a recipe needs 1-2 extra ingredients, we'll let you know (time to visit your neighbor! 😉)")
+st.write("- If a recipe needs 1-2 extra ingredients, we'll let you know.")
 
-# ========================================
+# __________________________
 # RECIPE RESULTS SECTION
-# ========================================
 # This section only appears after the user clicks "Find My Recipes"
-
+# We ensure this by checking the session state and that the number of ingredients is not zero.
 if st.session_state.show_results and len(st.session_state.selected_ingredients) > 0:
 
     st.write("---")
 
-    # ========================================
+    # _____________________
     # RESULTS HEADER
-    # ========================================
+    # HTML - done with AI 
     st.markdown(
         """
         <div class="big-title">🍽️ Your Perfect Recipes</div>
@@ -258,31 +259,20 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
 
     st.write("")
 
+    # Getting the user's selection from the session state.
+    # Interaction with user - making it more user friendly and porfessional.
     user_ingredients = st.session_state.selected_ingredients
     st.success(f"✅ Searching with **{len(user_ingredients)}** ingredient(s)")
-    st.write("**Your ingredients:**", ", ".join(user_ingredients))
     st.write("---")
 
-    # ========================================
+    # _____________________
     # LOAD DATA AND INITIALIZE MODELS
-    # ========================================
+    # Using caching to load models 
 
-    @st.cache_resource
+    # Initializing model function
     def initialize_models():
-        """
-        Initialize the clustering model and recipe matcher.
-
-        Technical Note:
-        -----------------
-        We use @st.cache_resource decorator to cache this function.
-        This means the models are loaded only ONCE and reused for all users.
-        This improves performance and saves computation time!
-
-        Returns:
-        --------
-        tuple
-            (clusterer, recipes_df) or (None, None) if error
-        """
+        # tuple (clusterer, recipes_df) or (None, None) if error
+    
         try:
             # Get the path to the CSV file
             csv_path = os.path.join('data', 'sample_recipes.csv')
