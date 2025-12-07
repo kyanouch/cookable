@@ -373,6 +373,9 @@ st.write(
 
 st.write("")
 st.write("**Meet the team** 👨‍💻👩‍💻")
+st.image(
+    "https://github.com/kyanouch/cookable/blob/57dc2a9194420ee6fe992562d9124b4f1237064b/cookable-app.py/About_picture.png?raw=true"
+)
 
 # Footer done with HTML and CSS again. Idea suggested in youtube videos. 
 st.markdown("---")
