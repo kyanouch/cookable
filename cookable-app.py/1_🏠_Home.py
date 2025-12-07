@@ -378,11 +378,11 @@ st.image(
     width=300
 )
 
-# Footer done with HTML and CSS again. Idea suggested in youtube videos. 
+# Footer done with HTML and CSS again. Idea suggested in youtube videos. It was vibe coded with AI.
 st.markdown("---")
 st.markdown(
     "<div style='text-align: center; color: #888; padding: 20px;'>"
-    "Made with ❤️ for home cooks everywhere | © 2025 Cookable"
+    "Made with ❤️ for desperate HSG students | © 2025 Cookable"
     "</div>",
     unsafe_allow_html=True
 )

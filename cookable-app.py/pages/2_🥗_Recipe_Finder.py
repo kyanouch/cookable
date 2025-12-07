@@ -271,77 +271,73 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
 
     # Initializing model function
     def initialize_models():
-        # tuple (clusterer, recipes_df) or (None, None) if error
-    
-        try:
-            # Get the path to the CSV file
-            csv_path = os.path.join('data', 'sample_recipes.csv')
+        # tuple (clusterer, recipes_df) 
+        # Get the path to the CSV file with recipe data 
+        # relative and absolute paths are tried to make sure it works in different environmaents --> this the modification that the AI did to make error handling more robust. 
+        rel_path = os.path.join('data', 'sample_recipes.csv') # relative (a shorter adress starting from our current working directory to the current file's directory)
+        abs_path = os.path.join(os.getcwd(), 'data', 'sample_recipes.csv') # absolute (full adress from the root of the file system)
 
-            # If file doesn't exist, try absolute path
-            if not os.path.exists(csv_path):
-                csv_path = os.path.join(
-                    os.getcwd(),
-                    'data',
-                    'sample_recipes.csv'
-                )
+        tried_paths = [rel_path, abs_path]
+        csv_path = None
 
-            # Load and train the clustering model
-            print("Loading clustering model...")
-            clusterer = load_clusterer(csv_path, n_clusters=5)
+        for path in tried_paths:
+            print(f"Trying recipe CSV path: {path}")
+            if os.path.exists(path): # chekcing of the path exists
+                csv_path = path
+                break 
 
-            if clusterer is None:
-                return None, None
+        if csv_path is None:
+            st.error(
+                f"Could not find 'sample_recipes.csv'.\n"
+            )
+            return None, None # returning a tuple with two None values (None value is Python's built-in "no value")
+            # for this code snippet we got assistance from the built-in AI in Vs code that makes suggestions. 
+            # Frankly I do not understand fully what it suggested, but I accepted the change as it says it will make error handling more robust. 
 
-            # Get the recipes DataFrame with cluster assignments
-            recipes_df = clusterer.recipes_df
+        # Load and train the clustering model
+        print("Loading clustering model...")
+        clusterer = load_clusterer(csv_path, n_clusters=5) # function that calls a helper that reads the recipe csv and builds a model that groups recipes into 5 clusters: it returns it into clusterer 
+        # variable clusterer will hold the returned model object
 
-            print(f"✅ Models initialized successfully!")
-            return clusterer, recipes_df
-
-        except Exception as e:
-            print(f"❌ Error initializing models: {e}")
+        if clusterer is None: # failure check
             return None, None
 
-    # Show loading message while models initialize
-    with st.spinner("🔄 Loading recipe database and AI models..."):
-        clusterer, recipes_df = initialize_models()
+        # Get the recipes DataFrame with cluster assignments. 
+        recipes_df = clusterer.recipes_df # variable that holds the recipes table - DataFrame
 
-    # Check if models loaded successfully
-    if clusterer is None or recipes_df is None:
-        st.error("❌ Error loading recipe database. Please check the data file.")
-    else:
-        # ========================================
-        # FIND MATCHING RECIPES
-        # ========================================
+        return clusterer, recipes_df # returns statement with a tuple of two variables -- the clusterer and the recipes table
 
-        st.write("### 🔍 Finding Your Perfect Recipes...")
+
+    # Loading models 
+    clusterer, recipes_df = initialize_models() # python's tuple unpacking. https://www.youtube.com/watch?v=yT-wF9_88Nw 
+
+    # FINDING MATCHING RECIPES
+    if clusterer is not None and recipes_df is not None:
+        st.write("### 🔍 Finding your recipes...")
 
         # Create the recipe matcher with our clusterer
-        matcher = create_matcher(recipes_df, clusterer)
+        matcher = create_matcher(recipes_df, clusterer) # our object
 
         # Find matching recipes
-        # Allow up to 2 missing ingredients, return top 5 recipes
-        matching_recipes = matcher.find_matching_recipes(
-            user_ingredients=user_ingredients,
+        # Reminder: allows up to 2 missing ingredients, return top 5 recipes
+        # Using the method defined in our logic file 
+        matching_recipes = matcher.find_matching_recipes( 
+            user_ingredients=user_ingredients, #list pulled from session state 
             max_missing=2,
             top_n=5
         )
 
         st.write("---")
 
-        # ========================================
-        # DISPLAY RESULTS
-        # ========================================
+        # __________________
+        # RESULTS DISPLAY
 
+        # this snippet is the answer our website gives the user. 
+        # To handle the problem of not finding any recipe for the user's selection, we have put it in an if---else statement. 
         if len(matching_recipes) == 0:
-            # No recipes found
-            st.warning("😕 We couldn't find any recipes matching your ingredients.")
-            st.write("Try adding more ingredients or removing some restrictions.")
-
+            st.warning("We couldn't find any recipes matching your ingredients.")
         else:
-            # Recipes found!
-            st.write(f"### 🎉 We Found {len(matching_recipes)} Amazing Recipes for You!")
-            st.write("")
+            st.write(f"### 🎉 We found {len(matching_recipes)} recipes for you!") # using an f string to display how many recipes were found
 
             # Display each recipe in an expandable card
             for idx, recipe in enumerate(matching_recipes, 1):
@@ -381,7 +377,7 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
                 if recipe['num_missing'] > 0:
                     missing = recipe['missing_ingredients']
                     st.warning(
-                        f"⚠️ Missing {recipe['num_missing']} ingredient(s): "
+                        f"Missing {recipe['num_missing']} ingredient(s): "
                         f"**{', '.join(missing)}**\n\n"
                         f"💡 Time to visit your neighbor! 😉"
                     )
@@ -407,14 +403,11 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
                     st.write(f"- **Cooking Time:** {recipe['cooking_time']} minutes")
                     st.write(f"- **Difficulty:** {recipe['difficulty'].title()}")
                     st.write(f"- **Rating:** {recipe['rating']}/5 stars")
-                    if recipe['cluster_id'] is not None:
-                        st.write(f"- **Recipe Cluster:** {recipe['cluster_id']} (similar recipes grouped by AI)")
 
                 st.write("---")
 
         # ========================================
         # EDUCATIONAL SECTION: HOW IT WORKS
-        # ========================================
         st.write("### 🎓 How Does This Work?")
 
         with st.expander("📚 Learn About Our Algorithm"):
@@ -483,17 +476,6 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
             """)
 
             st.write("")
-            st.info("""
-            💡 **Pro Tip:**
-
-            This is a powerful recommendation system used in production!
-            Real-world systems (like Netflix, Spotify) use more complex algorithms,
-            but the core principles are the same:
-            - Filtering
-            - Scoring multiple factors
-            - Combining with ML
-            - Ranking results
-            """)
 
         # ========================================
         # CLUSTERING INSIGHTS
@@ -527,25 +509,18 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
             - Recipes in popular clusters get a **small boost** in recommendations
             - This helps us recommend tried-and-true recipe styles!
             """)
-
-    # ========================================
-    # MODIFY SEARCH SECTION
-    # ========================================
+    # __________________
+    # TRY AGAIN 
     st.write("---")
     st.write("### 🔄 Want to try different ingredients?")
-    st.write("Simply change your ingredient selections above and click 'Find My Recipes' again!")
+    st.write("Simply change your ingredient selections above and click 'Find My Recipes'!")
 
-    # Button to scroll back to top
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button("🏠 Back to Home", use_container_width=True):
-            st.switch_page("1_🏠_Home.py")
-
-# Footer
+# Footer - again vibe coded with AI
 st.markdown("---")
 st.markdown(
     "<div style='text-align: center; color: #888; padding: 20px;'>"
-    "Made with ❤️ for home cooks everywhere | © 2025 Cookable"
+    "Made with ❤️ for desperate HSG students | © 2025 Cookable"
     "</div>",
     unsafe_allow_html=True
 )
+
