@@ -190,7 +190,7 @@ st.write("---")
 
 # ___________________
 # SELECTED INGREDIENTS SUMMARY
-st.write("### 📋 Your Selected Ingredients:")
+st.write("### 📋 Your selected ingredients:")
 
 # if ... else statement to show different messages to orient the user 
 if selected:
@@ -211,7 +211,7 @@ st.write("")
 # FIND RECIPES BUTTON
 # interaction with user to start the recipe search
 # To find how to best guide a user through the website we used existing websites as templates and generated possible user - UI dialogs with AI (our own versions felt weird and not prefessional).
-st.write("### 🎯 Ready to find recipes?")
+st.write("### 🤌 Ready to find recipes?")
 
 if len(selected) > 0:
     st.write(f"Great! We'll find the best recipes based on your {len(selected)} ingredient(s).") # progressing with the user dialog and making sure ingreditents are selected. 
@@ -226,7 +226,7 @@ if len(selected) > 0:
             # Rerun to display results
             st.rerun()
 else:
-    st.warning("⚠️ Please select at least one ingredient to continue") # --> https://cheat-sheet.streamlit.app/
+    st.warning("Please select at least one ingredient to continue") # --> https://cheat-sheet.streamlit.app/
     st.session_state.show_results = False
 
 st.write("---")
@@ -234,10 +234,9 @@ st.write("---")
 # _____________________
 # FOR SIMPLICITY PURPOSES 
 # We wanted to keep things a bit simpler for us, so we don't care about quantites, and we assume that the most basic ingredients are always available. 
-st.write("### 💡 Tips:")
+st.write("### ❕ Notes:")
 st.write("- Salt, pepper, oil, and butter are assumed to be available all the time.")
 st.write("- We don't worry about exact quantities - just what you have!")
-st.write("- If a recipe needs 1-2 extra ingredients, we'll let you know.")
 
 # __________________________
 # RECIPE RESULTS SECTION
@@ -266,14 +265,13 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
     st.write("---")
 
     # _____________________
-    # LOAD DATA AND INITIALIZE MODELS
-    # Using caching to load models 
+    # LOAD DATA AND INITIALIZE MODELS 
 
     # Initializing model function
     def initialize_models():
         # tuple (clusterer, recipes_df) 
         # Get the path to the CSV file with recipe data 
-        # relative and absolute paths are tried to make sure it works in different environmaents --> this the modification that the AI did to make error handling more robust. 
+        # relative and absolute paths are tried to make sure it works in different environmaents --> this a modification that the built-in AI suggested and implemented to make error handling more robust. 
         rel_path = os.path.join('data', 'sample_recipes.csv') # relative (a shorter adress starting from our current working directory to the current file's directory)
         abs_path = os.path.join(os.getcwd(), 'data', 'sample_recipes.csv') # absolute (full adress from the root of the file system)
 
@@ -296,7 +294,7 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
 
         # Load and train the clustering model
         print("Loading clustering model...")
-        clusterer = load_clusterer(csv_path, n_clusters=5) # function that calls a helper that reads the recipe csv and builds a model that groups recipes into 5 clusters: it returns it into clusterer 
+        clusterer = load_clusterer(csv_path, n_clusters=5) # function that calls reads the recipes from the CSV and builds/returns a clustering model object configured for 5 clusters.  
         # variable clusterer will hold the returned model object
 
         if clusterer is None: # failure check
@@ -311,6 +309,7 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
     # Loading models 
     clusterer, recipes_df = initialize_models() # python's tuple unpacking. https://www.youtube.com/watch?v=yT-wF9_88Nw 
 
+    #____________________
     # FINDING MATCHING RECIPES
     if clusterer is not None and recipes_df is not None:
         st.write("### 🔍 Finding your recipes...")
@@ -332,36 +331,38 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
         # __________________
         # RESULTS DISPLAY
 
-        # this snippet is the answer our website gives the user. 
+        # This code snippet is the answer our website gives the user. 
         # To handle the problem of not finding any recipe for the user's selection, we have put it in an if---else statement. 
         if len(matching_recipes) == 0:
             st.warning("We couldn't find any recipes matching your ingredients.")
         else:
-            st.write(f"### 🎉 We found {len(matching_recipes)} recipes for you!") # using an f string to display how many recipes were found
+            st.write(f"### 🧑‍🍳 We found {len(matching_recipes)} recipes for you!") # using an f string to display how many recipes were found.
 
-            # Display each recipe in an expandable card
-            for idx, recipe in enumerate(matching_recipes, 1):
+            # Displaying each recipe in an expander. 
+            # Using Python dictionnary - recipe, with all the info about each recipe. 
+            # The values below come from the logic document. Here we simply display them. 
+            for idx, recipe in enumerate(matching_recipes, 1): # Loops over the list matching recipes and enumerates it giving the index and the recipe. 
+                # Finction enumerate allows to right down the recipe and it's index (idx)
+                # we state that we start to enumerate at 1, as default number for Python is 0, so the index of the best recipe comes out on position 1. 
                 # Recipe header with rank
-                st.markdown(f"### {idx}. {recipe['recipe_name']}")
+                st.markdown(f"### {idx}. {recipe['recipe_name']}") # Using properties of Python dictionaries to pull out the desired values. 
 
-                # Create columns for recipe info
-                col1, col2, col3, col4 = st.columns(4)
+                # Creating columns for recipe info. Again displaying information using properties of Python dictonaries. 
+                col1, col2, col3, col4 = st.columns(4) # displaying data using st-metric (https://cheat-sheet.streamlit.app/)
 
                 with col1:
-                    st.metric("⭐ Rating", f"{recipe['rating']}/5")
+                    st.metric("⭐ Rating", f"{recipe['rating']}/5") 
 
                 with col2:
                     st.metric("⏱️ Time", f"{recipe['cooking_time']} min")
 
                 with col3:
-                    st.metric("✅ Match", f"{recipe['num_matching']} ing.")
+                    st.metric("✅ Match", f"{recipe['num_matching']} ing.") 
 
                 with col4:
-                    difficulty_emoji = {"easy": "😊", "medium": "😐", "hard": "😰"}
-                    emoji = difficulty_emoji.get(recipe['difficulty'].lower(), "😊")
-                    st.metric("🎯 Difficulty", f"{emoji} {recipe['difficulty'].title()}")
+                    st.metric("💪 Difficulty", recipe['difficulty'].title())
 
-                # Show match score with color coding
+                # Show match score with color coding --> AI assisted - codex vibe coding
                 score_color = "#4CAF50" if recipe['final_score'] > 0.7 else "#FF9800"
                 st.markdown(
                     f"<div style='background: {score_color}; color: white; padding: 8px; "
@@ -379,11 +380,11 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
                     st.warning(
                         f"Missing {recipe['num_missing']} ingredient(s): "
                         f"**{', '.join(missing)}**\n\n"
-                        f"💡 Time to visit your neighbor! 😉"
+                        f"Time to visit your neighbor! 😉"
                     )
 
-                # Expandable section for full recipe details
-                with st.expander(f"📖 View Full Recipe: {recipe['recipe_name']}"):
+                # Expanders to display the details on the recipe in case the user wants to cook it. 
+                with st.expander(f"📖 Open full recipe: {recipe['recipe_name']}"):
                     st.write("#### Ingredients Needed:")
                     st.write("")
 
@@ -399,17 +400,17 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
                     st.write(recipe['instructions'])
 
                     st.write("")
-                    st.write("#### Recipe Metadata:")
-                    st.write(f"- **Cooking Time:** {recipe['cooking_time']} minutes")
-                    st.write(f"- **Difficulty:** {recipe['difficulty'].title()}")
-                    st.write(f"- **Rating:** {recipe['rating']}/5 stars")
+                    st.write("#### Recipe info:")
+                    st.write(f"- Cooking Time: {recipe['cooking_time']} minutes")
+                    st.write(f"- Difficulty: {recipe['difficulty'].title()}")
+                    st.write(f"- Rating: {recipe['rating']}/5 stars")
 
                 st.write("---")
 
-        # ========================================
+        # ____________________
         # EDUCATIONAL SECTION --> I really like expanders, it makes the website super interactive and professional, so I decided to put an expander explaining how it works. 
         # it also portays our plan, what we were pursuing when we finally understood what exactly we have to code. This plan was suggested to us by AI in long dialogs to find the best logic for the matching. 
-        st.write("### 🎓 How Does This Work?")
+        st.write("### 🥘 How did we cook this website?")
 
         with st.expander("Click if you want to learn more about the algorithm"):
             st.write("#### The Cookable Recipe Matching Algorithm")
@@ -419,13 +420,13 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
             Here's how it works:
             """)
 
-            st.write("#### Step 1: 🔍 Filtering")
+            st.write("#### 🍒 Step 1: Filtering")
             st.write("""
             - We first filter recipes that you can actually make with your ingredients by allowing up to two missing ingredients. 
             - We assume that salt, pepper, oil, and butter are always available for simplification purposes. 
             """)
 
-            st.write("#### Step 2: 📊 Rules-based score")
+            st.write("#### 🍇 Step 2: Rules-based score")
             st.write("""
 
             1. Ingredient Match Ratio (40% weight)
@@ -442,7 +443,7 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
                - Quality matters!
             """)
 
-            st.write("#### Step 3: Machine Learning Boost 🤖")
+            st.write("#### 🍉 Step 3: Machine Learning Boost")
             st.write("""
             We use K-Means clustering to group similar recipes together.
             - Recipes are grouped into 5 clusters based on their ingredients
@@ -450,7 +451,7 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
             - Recipes in popular clusters get a bonus boost
             """)
 
-            st.write("#### Step 4: Final Score")
+            st.write("#### 🍫 Step 4: Final Score")
             st.write("""
             We combine everything into a final score:
 

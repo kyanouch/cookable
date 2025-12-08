@@ -81,7 +81,7 @@ st.markdown(
 st.markdown(
     """
     <div style="width: 100%;">
-        <div class="big-title">🍳 COOKABLE</div>
+        <div class="big-title">🍳 COOKABLE 🍳</div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -154,12 +154,12 @@ st.markdown("---")
 # CONCEPT EXPLANATION
 # To create a nicer user experience, we explain the concept and add some reviews. We got inspired by some startup landing pages and jargon. 
 # We had fun with emojis once we learned that you can use them in Stremlit. They make the page look more colorful. 
-st.write("#### 🎯 What is Cookable?")
+st.write("#### 🍜 What is Cookable?")
 st.write("Cookable is your go-to AI-Fridge. It suggests recipes based on what you have in the fridge.")
 st.write("Stop wasting brain power on deciding what to cook - save it for university instead!")
 st.write("")
 st.write("")
-st.write("#### 🧠 Why Cookable?")
+st.write("#### 🥦 Why Cookable?")
 st.write(
     "An average Cookable user saves up to 700 Hz of brain power daily - which they can direct into studying computer science instead."
 )
@@ -170,7 +170,7 @@ st.markdown("---")
 # CUSTOMER REVIEWS CAROUSEL
 # This section is heavily AI assisted as we do not know how to create carousels using HTML.  
 # This carousel automatically animates using CSS (-thanks AI!)
-st.write("##### 💬 What our users are saying:")
+st.write("##### 🍗 What our users are saying:")
 
 # Here are the quotes and authors.
 quotes = [
@@ -337,7 +337,7 @@ st.write("")
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     # Using the streamlit button funstion to switch pages. 
-    if st.button("🥘 Start Cooking", use_container_width=True):
+    if st.button("Start Cooking", use_container_width=True):
         st.switch_page("pages/2_🥗_Recipe_Finder.py")
 
 st.markdown("---")
@@ -372,7 +372,7 @@ st.write(
 )
 
 st.write("")
-st.write("**Meet the team** 👨‍💻👩‍💻")
+st.write("**Meet the team**") # --> https://github.com/adam-p/markdown-here/wiki/markdown-cheatsheet 
 st.image(
     "https://github.com/kyanouch/cookable/blob/57dc2a9194420ee6fe992562d9124b4f1237064b/cookable-app.py/About_picture.png?raw=true",
     width=300
