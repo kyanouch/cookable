@@ -338,7 +338,7 @@ col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     # Using the streamlit button funstion to switch pages. 
     if st.button("Start Cooking", use_container_width=True):
-        st.switch_page("pages/2_🥗_Recipe_Finder.py")
+        st.switch_page("pages/2_Recipe_Finder.py")
 
 st.markdown("---")
 
