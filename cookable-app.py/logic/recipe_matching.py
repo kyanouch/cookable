@@ -1,73 +1,43 @@
-"""
-COOKABLE - Recipe Matching Logic
-==================================
+# Recipe Matching Logic
+# This pages handles the core recipe matching algorithm.----------------
 
-This module handles the core recipe matching algorithm.
-It finds the best recipes based on what ingredients the user has available.
+# This code builds a recommendation system that combines:
+# 1. Rule-based filtering (ingredients matching)
+# 2. Weighted factors scoring
+# 3. Machine learning (clustering popularity)
 
-Technical Overview:
--------------------
-This code demonstrates how to build a recommendation system that combines:
-1. Rule-based filtering (ingredients matching)
-2. Heuristic scoring (multiple factors)
-3. Machine learning boost (clustering popularity)
-
-The Algorithm:
---------------
-1. Filter recipes that can be made with available ingredients
-   - Allow up to 2 missing ingredients (user can borrow from neighbor!)
-   - Assume salt, pepper, oil, butter are always available
-
-2. Calculate a base score for each recipe:
-   - More matching ingredients = higher score
-   - Fewer missing ingredients = higher score
-   - Shorter cooking time = small bonus
-   - Higher rating = higher score
-
-3. Add ML boost from clustering:
-   - Recipes in popular clusters get a bonus
-   - Individual recipe rating also contributes
-
-4. Rank recipes by final score and return top N
-
-Key Concepts:
--------------
-- Set Operations: Using Python sets to compare ingredients efficiently
-- Scoring Function: Combining multiple factors into a single score
-- Normalization: Scaling scores to 0-1 range for fair comparison
-- Weighted Sum: Combining different scores with weights (importance)
-"""
+# The Algorithm:
+# 1. Filter recipes that can be made with available ingredients
+# - Allow up to 2 missing ingredients (user can borrow from neighbor!)
+# - Assume salt, pepper, oil, butter are always available
+# 2. Calculate a base score for each recipe:
+# - More matching ingredients = higher score
+# - Fewer missing ingredients = higher score
+# - Shorter cooking time = small bonus
+# - Higher rating = higher score
+# 3. Add ML boost from clustering:
+# - Recipes in popular clusters get a bonus
+# - Individual recipe rating also contributes
+# 4. Rank recipes by final score and return top
 
 import pandas as pd
 import numpy as np
 
-
+# Using object orientation 
 class RecipeMatcher:
-    """
-    This class handles recipe matching and recommendation.
+    # This class handles recipe matching and recommendation.
+    # It takes user ingredients and finds the best matching recipes using a combination of rule-based filtering and scoring.
 
-    It takes user ingredients and finds the best matching recipes
-    using a combination of rule-based filtering and scoring.
-    """
+    def __init__(self, recipes_df, clusterer=None): # Initializing the RecipeMatcher.
 
-    def __init__(self, recipes_df, clusterer=None):
-        """
-        Initialize the RecipeMatcher.
+        # Parameters:
+        # - recipes_df : DataFrame - the recipes dataset
+        # clusterer : RecipeClusterer, optional - the clustering model for ML boost
+        # Technical Note:
+        # We separate the matcher from the clusterer to follow "separation of concerns" - each class has one clear job.
 
-        Parameters:
-        -----------
-        recipes_df : DataFrame
-            The recipes dataset
-        clusterer : RecipeClusterer, optional
-            The clustering model for ML boost
-
-        Technical Note:
-        -----------------
-        We separate the matcher from the clusterer to follow
-        "separation of concerns" - each class has one clear job.
-        """
-        self.recipes_df = recipes_df.copy()
-        self.clusterer = clusterer
+        self.recipes_df = recipes_df.copy() # Making a copy of the incoming recipes DataFrame and keep it on the object, so changes inside the class don’t mutate the original DataFrame passed in.
+        self.clusterer = clusterer 
 
         # Ingredients that are always assumed to be available
         # These are common pantry staples
