@@ -443,7 +443,7 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
                - Quality matters!
             """)
 
-            st.write("#### 🍉 Step 3: Machine Learning Boost")
+            st.write("#### 🍉 Step 3: Machine learning boost")
             st.write("""
             We use K-Means clustering to group similar recipes together.
             - Recipes are grouped into 5 clusters based on their ingredients
@@ -451,7 +451,7 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
             - Recipes in popular clusters get a bonus boost
             """)
 
-            st.write("#### 🍫 Step 4: Final Score")
+            st.write("#### 🍫 Step 4: Final score")
             st.write("""
             We combine everything into a final score:
 
