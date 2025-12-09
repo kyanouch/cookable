@@ -423,24 +423,23 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
             st.write("#### 🍒 Step 1: Filtering")
             st.write("""
             - We first filter recipes that you can actually make with your ingredients by allowing up to two missing ingredients. 
-            - We assume that salt, pepper, oil, and butter are always available for simplification purposes. 
+            - We assume that salt, pepper, oil, and butter are always available for simplicity. 
             """)
 
             st.write("#### 🍇 Step 2: Rules-based score")
             st.write("""
 
-            1. Ingredient Match Ratio (40% weight)
-               - The higher the percentage of ingredients that the user has - the better.
+            1. Ingredient match ratio (40% weight)
+               - The higher the percentage of ingredients that the user has - the better
 
-            2. Missing Ingredient Penalty (30% weight)
-               - The fewer the number of missing ingredients - the better. 
+            2. Missing ingredient penalty (30% weight)
+               - The fewer the number of missing ingredients - the better 
 
-            3. Cooking Time Factor (10% weight)
-               - Shorter cooking time - small bonus.
+            3. Cooking time factor (10% weight)
+               - Shorter cooking time - small bonus
 
-            4. Recipe Rating (20% weight)
-               - Higher rated recipes get a boost
-               - Quality matters!
+            4. Recipe rating (20% weight)
+               - Higher rated recipes - boost
             """)
 
             st.write("#### 🍉 Step 3: Machine learning boost")
