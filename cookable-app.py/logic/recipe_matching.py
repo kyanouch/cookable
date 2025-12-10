@@ -45,7 +45,7 @@ class RecipeMatcher:
             'Olive oil', 'Vegetable oil', 'Black pepper'
         }
 
-        print(f"✅ Recipe Matcher initialized!")
+        print(f"Recipe matcher initialized.")
 
     def find_matching_recipes(self, user_ingredients, max_missing=2, top_n=5):
         # Parameters:
@@ -61,7 +61,7 @@ class RecipeMatcher:
         # Add assumed ingredients to user's available ingredients
         user_ingredients_set.update(self.assumed_ingredients)
 
-        print(f"\n🧠 Searching for recipes...")
+        print(f"\n Searching for recipes...🧠")
 
         # List to store candidate recipes with their scores
         candidates = []
@@ -149,8 +149,8 @@ class RecipeMatcher:
         # Return top N recipes
         top_recipes = candidates[:top_n]
 
-        print(f"🍴 Found {len(candidates)} feasible recipes")
-        print(f"🧂 Returning top {len(top_recipes)} recommendations")
+        print(f"Found {len(candidates)} feasible recipes 🍴")
+        print(f"Returning top {len(top_recipes)} recommendations 🧂")
 
         return top_recipes
     
