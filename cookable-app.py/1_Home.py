@@ -1,7 +1,7 @@
 # COOKABLE - Main Landing Page
 # This is the main entry point for the cookable web application.
 # It contains the hero section, the concept explanation, some customer reviews, and the about section.
-
+# Home.py and Recipe_Finder.py are the UI part of the project
 
 import streamlit as st
 
@@ -152,7 +152,7 @@ st.markdown("---")
 
 # ____________
 # CONCEPT EXPLANATION
-# To create a nicer user experience, we explain the concept and add some reviews. We got inspired by some startup landing pages and jargon. 
+# To create a nicer user experience, we explain the concept and add some reviews. We got inspired by some startup landing pages. 
 # We had fun with emojis once we learned that you can use them in Stremlit. They make the page look more colorful. 
 st.write("#### 🍜 What is Cookable?")
 st.write("Cookable is your go-to AI-Fridge. It suggests recipes based on what you have in the fridge.")
@@ -336,7 +336,7 @@ st.write("")
 # Button styling is already applied globally at the top of the page.
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    # Using the streamlit button funstion to switch pages. 
+    # Using the streamlit button function to switch pages. 
     if st.button("Start Cooking", use_container_width=True):
         st.switch_page("pages/2_Recipe_Finder.py")
 
@@ -344,7 +344,7 @@ st.markdown("---")
 
 # _________________
 # ABOUT SECTION
-# I tried to imitate a startup story text (and make fun of it a bit). 
+# Not another startup story text 
 st.write("##### 🥸 About Cookable")
 st.write("")
 

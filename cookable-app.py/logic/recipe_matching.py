@@ -25,16 +25,15 @@ import numpy as np
 
 # Using object orientation 
 class RecipeMatcher:
-    # This class handles recipe matching and recommendation --> created below in HELPER FUNCTION section
+    # This class handles recipe matching and recommendation 
     # It takes user ingredients and finds the best matching recipes using a combination of rule-based filtering and scoring.
 
     def __init__(self, recipes_df, clusterer=None): # Initializing the RecipeMatcher.
 
         # Parameters:
-        # - recipes_df : DataFrame - the recipes dataset
-        # clusterer : RecipeClusterer, optional - the clustering model for ML boost
-        # Technical Note:
-        # We separate the matcher from the clusterer to follow "separation of concerns" - each class has one clear job.
+        # - recipes_df: DataFrame - the recipes dataset
+        # clusterer: RecipeClusterer, optional - the clustering model for ML boost
+        # Note: We separate the matcher from the clusterer to follow "separation of concerns" - each class has one clear job (https://youtu.be/ljW0clZJvAk?si=aqP1k-bkioPWFkkA)
 
         self.recipes_df = recipes_df.copy() # Making a copy of the incoming recipes DataFrame and keep it on the object, so changes inside the class don’t mutate the original DataFrame passed in.
         self.clusterer = clusterer 
@@ -49,9 +48,9 @@ class RecipeMatcher:
 
     def find_matching_recipes(self, user_ingredients, max_missing=2, top_n=5):
         # Parameters:
-        # user_ingredients : list - List of ingredients the user has
-        # max_missing : int- maximum number of missing ingredients allowed (default: 2)
-        # top_n : int - number of top recipes to return (default: 5)
+        # user_ingredients: list - List of ingredients the user has
+        # max_missing: int- maximum number of missing ingredients allowed (default: 2)
+        # top_n: int - number of top recipes to return (default: 5)
         # Returns:list of dictionaries - top N matching recipes with scores and details
         # --> This is the main algorithm that ties everything together!
 
@@ -111,7 +110,7 @@ class RecipeMatcher:
                 cluster_popularity = self.clusterer.get_cluster_popularity(cluster_id)
 
                 # Normalize recipe rating to 0-1 scale (assuming ratings are 1-5) --> prevents the rating term from overpowering the cluster popularity. 
-                normalized_rating = (recipe_rating - 1) / 4 # min-max scaling to combine features with a defferent range 
+                normalized_rating = (recipe_rating - 1) / 4 # min-max scaling to combine features with a different range 
 
                 # Combine recipe popularity and cluster popularity
                 # Weighted formula for ML boost calculation:
@@ -163,12 +162,12 @@ class RecipeMatcher:
     def _calculate_base_score(self, num_matching, num_missing, num_total,
                                cooking_time, rating):
         # Parameters:
-        # num_matching : int - number of ingredients that match
-        # num_missing : int - number of missing ingredients
-        # num_total : int - total ingredients in recipe
-        # cooking_time : int - cooking time in minutes
-        # rating : float - recipe rating (1-5 stars)
-        # Returns:float = Base score (0-1 range)
+        # num_matching: int - number of ingredients that match
+        # num_missing: int - number of missing ingredients
+        # num_total: int - total ingredients in recipe
+        # cooking_time: int - cooking time in minutes
+        # rating: float - recipe rating (1-5 stars)
+        # Returns: float = Base score (0-1 range)
 
         # 1. INGREDIENT MATCH RATIO
         # What percentage of the recipe's ingredients does the user have?
@@ -221,7 +220,7 @@ class RecipeMatcher:
     # Get full details for a specific recipe.
     def get_recipe_details(self, recipe_name):
         # Parameters:
-        #  recipe_name : string - name of the recipe
+        #  recipe_name: string - name of the recipe
         # Returns:dictionary or None - recipe details if found, None otherwise
 
         recipe = self.recipes_df[self.recipes_df['recipe_name'] == recipe_name] # filters the dataframe to rows whose recipe name matches the requested name
@@ -235,7 +234,7 @@ class RecipeMatcher:
                 'rating': recipe['rating'],
                 'difficulty': recipe['difficulty'],
                 'instructions': recipe['instructions']
-            } # constructiong a python dictionary with the selected fields from that pandas seires 
+            } # constructing a python dictionary with the selected fields from that pandas seires 
         return None
 
 # HELPER FUNCTIONS
@@ -243,7 +242,40 @@ def create_matcher(recipes_df, clusterer=None):
     return RecipeMatcher(recipes_df, clusterer)
     # Convenience function to create a RecipeMatcher.
     # Parameters:
-    # recipes_df : DataFrame - recipes dataset
-    # clusterer : Clustering model
+    # recipes_df: DataFrame - recipes dataset
+    # clusterer: Clustering model
     # Returns: RecipeMatcher = initialized matcher
     # --> for cleaner code
+
+
+# Manual test runner (uses the SQLite DB; falls back to CSV if present) - Done with the help of AI
+if __name__ == "__main__":
+    import os
+    from logic.clustering import load_clusterer
+
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    db_path = os.path.join(base_dir, "data", "recipes.db")
+    csv_fallback = os.path.join(base_dir, "data", "sample_recipes.csv")
+
+    clusterer = load_clusterer(db_path=db_path, n_clusters=5, csv_fallback=csv_fallback)
+    if clusterer is None:
+        print("Could not load clusterer for testing.")
+    else:
+        matcher = create_matcher(clusterer.recipes_df, clusterer)
+        test_ingredients = ['Eggs', 'Pasta', 'Bacon', 'Parmesan cheese']
+        print(f"Testing with ingredients: {test_ingredients}\n")
+        results = matcher.find_matching_recipes(
+            user_ingredients=test_ingredients,
+            max_missing=2,
+            top_n=3
+        )
+        print("\nTop Recommendations:")
+        for i, recipe in enumerate(results, 1):
+            print(f"\n{i}. {recipe['recipe_name']}")
+            print(f"   Rating: {recipe['rating']}/5")
+            print(f"   Cooking time: {recipe['cooking_time']} mins")
+            print(f"   Final score: {recipe['final_score']:.3f}")
+            print(f"   Matching ingredients: {recipe['num_matching']}")
+            print(f"   Missing ingredients: {recipe['num_missing']}")
+            if recipe['num_missing'] > 0:
+                print(f"      Missing: {', '.join(recipe['missing_ingredients'])}")

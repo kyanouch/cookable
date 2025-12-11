@@ -13,6 +13,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 import os
+import sqlite3
 
 # Creating a class that handles recipe clustering using K-Means algorithm.
 class RecipeClusterer:
@@ -25,11 +26,11 @@ class RecipeClusterer:
     # cluster_popularity : popularity score for each cluster (dictionnary)
     
 # Initializing the RecipeClusterer
-    def __init__(self, csv_path, n_clusters=5):
+    def __init__(self, db_path, n_clusters=5):
         
         # Parameters:
-        # - csv_path : str, path to the recipes CSV file
-        # - n_clusters : int, number of recipe clusters to create (default: 5)
+        # - db_path : str, path to the recipes SQLite database file
+        # - n_clusters : int, number of recipe clusters to create (5)
 
         # We use 5 clusters as a default because it provides a good balance:
         # - Not too few (which would group very different recipes together)
@@ -43,7 +44,7 @@ class RecipeClusterer:
         self.cluster_popularity = {} # dict to hold per-cluster popularity scores after they’re computed
 
         # Load the recipes dataset
-        self._load_recipes(csv_path)
+        self._load_recipes(db_path)
 
         # Process ingredients and create feature vectors
         self._create_feature_vectors()
@@ -56,18 +57,19 @@ class RecipeClusterer:
 
 # METHOD DEFINITION
 
-    # Using Pandas to load the CSV file 
-    # Loading recipes form Dataset 
-    def _load_recipes(self, csv_path):
+    # Using Pandas to load the SQLite file 
+    # Loading recipes from Dataset 
+    def _load_recipes(self, db_path):
 
-        if not os.path.exists(csv_path): # Error handling
-            raise FileNotFoundError(f"Recipe dataset not found at: {csv_path}")
+        if not os.path.exists(db_path): # Error handling
+            raise FileNotFoundError(f"Recipe database not found at: {db_path}")
 
-        # Load CSV into a pandas DataFrame
-        self.recipes_df = pd.read_csv(csv_path)
+        # Load SQLite table into a pandas DataFrame
+        with sqlite3.connect(db_path) as conn:
+            self.recipes_df = pd.read_sql("SELECT * FROM recipes", conn)
 
         # Convert ingredients from string to list
-        # CSV stores lists as strings like "Eggs,Milk,Flour" and we need to convert them to Python lists: ["Eggs", "Milk", "Flour"]
+        # DB stores lists as strings like "Eggs,Milk,Flour" and we need to convert them to Python lists: ["Eggs", "Milk", "Flour"]
         self.recipes_df['ingredients'] = self.recipes_df['ingredients'].apply(
             lambda x: [ing.strip() for ing in x.split(',')]
         )
@@ -220,22 +222,30 @@ class RecipeClusterer:
 
 # HELPER FUNCTIONS
 
-def load_clusterer(csv_path='data/sample_recipes.csv', n_clusters=5):
+def load_clusterer(db_path='data/recipes.db', n_clusters=5, csv_fallback='data/sample_recipes.csv'):
     try:
-        clusterer = RecipeClusterer(csv_path, n_clusters)
+        # If the DB is missing but a CSV fallback exists, create the DB on the fly.
+        if not os.path.exists(db_path) and csv_fallback and os.path.exists(csv_fallback):
+            df = pd.read_csv(csv_fallback)
+            with sqlite3.connect(db_path) as conn:
+                df.to_sql('recipes', conn, if_exists='replace', index=False)
+            print(f"Created SQLite DB at {db_path} from CSV fallback {csv_fallback}")
+
+        clusterer = RecipeClusterer(db_path, n_clusters)
         return clusterer
     except Exception as e:
         print(f"Error loading clusterer: {e}")
         return None
 # Convenience function to load and initialize the clusterer.
     # Parameters:
-    # csv_path : Path to recipes CSV file (str)
+    # db_path : Path to recipes SQLite DB file (str)
+    # csv_fallback : Optional CSV path used to build the DB if missing (str)
     # n_clusters : Number of clusters to create (int)
     # Returns: Initialized and trained clusterer (RecipeClusterer)
     # Technical Note: We use this pattern to make the code cleaner and easier to use.
 
 
-# TESTING CODE (runs only if this file is executed directly)
+# TESTING CODE
 
 if __name__ == "__main__":
 
@@ -247,7 +257,7 @@ if __name__ == "__main__":
     print()
 
     # Test loading the clusterer
-    clusterer = load_clusterer('../data/sample_recipes.csv', n_clusters=5)
+    clusterer = load_clusterer('../data/recipes.db', n_clusters=5, csv_fallback='../data/sample_recipes.csv')
 
     if clusterer:
         print("\n" + "=" * 60)
@@ -263,5 +273,5 @@ if __name__ == "__main__":
             print(f"  - Example recipes: {', '.join(info['example_recipes'][:2])}")
 
         print("\n" + "=" * 60)
-        print("✅ Clustering logic test completed successfully!")
+        print("Clustering logic test completed successfully!")
         print("=" * 60)

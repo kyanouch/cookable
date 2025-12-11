@@ -1,7 +1,7 @@
 # COOKABLE - Recipe Finder Page
 # This page is the core interface for users of our project.  
 # Users can select their available ingredients and see matching recipe recommendations
-# The way it works:
+# Quick pitch:
 # User selects ingredients from checkboxes with emoji indicators
 # Selected ingredients are stored in session state
 # User clicks "Find My Recipes" button to start the search
@@ -9,16 +9,16 @@
 # The user can modify their selections and search again for updated results
 
 # SESSION STATE EXPLANTION: 
-# We got recommended (by AI) to use the function 'session state' of streamlit because our webiste is interactive.
+# Streamlit tool to track what the user does on the website. 
 # In order to keep the selected elements after reruning the app when the user clicks on the find recipes button. Without it a rerun will use the selection. 
-# Information point (this is a pain to understand): https://youtu.be/92jUAXBmZyU?si=dZTb0-M9jz46sW7I https://youtu.be/5l9COMQ3acc?si=hy9EM9e0f2ihkIj8 
+# Main information points : https://youtu.be/92jUAXBmZyU?si=dZTb0-M9jz46sW7I https://youtu.be/5l9COMQ3acc?si=hy9EM9e0f2ihkIj8 
 
 #_____________
 # IMPORTS
 import streamlit as st
 import os
 import sys
-# These two imports allow us to import our logic modules (the backend of the app). These are two built-in Python modules that help navigate file paths and system paths inside our app. 
+# The last two imports allow us to import our logic modules (the backend of the app). These are two built-in Python modules that help navigate file paths and system paths inside our app. 
 
 # This line tells Python to look the upper folder in the folder hierarchy. So we can import from the logic folder. 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -199,7 +199,7 @@ if selected:
 
     # Display in a nice formatted way - green message, showing number in bold using ** 
     st.success(f"✅ You have selected **{len(selected)}** ingredient(s):")
-    st.write(", ".join(selected)) # used AI to find the way to display it with commas 
+    st.write(", ".join(selected)) 
 else:
     # No ingredients selected yet
     st.info("👆 Check the boxes above to select your ingredients")
@@ -210,7 +210,7 @@ st.write("")
 # ________________
 # FIND RECIPES BUTTON
 # interaction with user to start the recipe search
-# To find how to best guide a user through the website we used existing websites as templates and generated possible user - UI dialogs with AI (our own versions felt weird and not prefessional).
+# To find how to best guide a user through the website we used existing websites as templates 
 st.write("### 🤌 Ready to find recipes?")
 
 if len(selected) > 0:
@@ -220,7 +220,7 @@ if len(selected) > 0:
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         # Using button which properly handles session state
-        if st.button("🔍 Find My Recipes", use_container_width=True): #to stretch the button full width we use the boolean option use_container_width=True - AI made and suggested
+        if st.button("🔍 Find My Recipes", use_container_width=True): #to stretch the button full width we use the boolean option use_container_width=True - AI made
             # Using booleans to control the button and show results thanks to session state 
             st.session_state.show_results = True
             # Rerun to display results
@@ -270,31 +270,42 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
     # Initializing model function
     def initialize_models():
         # tuple (clusterer, recipes_df) 
-        # Get the path to the CSV file with recipe data 
-        # relative and absolute paths are tried to make sure it works in different environmaents --> this a modification that the built-in AI suggested and implemented to make error handling more robust. 
-        rel_path = os.path.join('data', 'sample_recipes.csv') # relative (a shorter adress starting from our current working directory to the current file's directory)
-        abs_path = os.path.join(os.getcwd(), 'data', 'sample_recipes.csv') # absolute (full adress from the root of the file system)
+        # Get the path to the SQLite DB (with a CSV fallback if needed)
+        rel_db_path = os.path.join('data', 'recipes.db')
+        abs_db_path = os.path.join(os.getcwd(), 'data', 'recipes.db')
+        rel_csv_path = os.path.join('data', 'sample_recipes.csv')
+        abs_csv_path = os.path.join(os.getcwd(), 'data', 'sample_recipes.csv')
 
-        tried_paths = [rel_path, abs_path]
-        csv_path = None
+        tried_db_paths = [rel_db_path, abs_db_path]
+        db_path = None
 
-        for path in tried_paths:
-            print(f"Trying recipe CSV path: {path}")
-            if os.path.exists(path): # chekcing of the path exists
-                csv_path = path
+        for path in tried_db_paths:
+            print(f"Trying recipe DB path: {path}")
+            if os.path.exists(path): # checking if the path exists
+                db_path = path
                 break 
 
-        if csv_path is None:
+        # Fallback CSV (used to create the DB if the DB is missing)
+        tried_csv_paths = [rel_csv_path, abs_csv_path]
+        csv_fallback = None
+        for path in tried_csv_paths:
+            if os.path.exists(path):
+                csv_fallback = path
+                break
+
+        if db_path is None:
+            # Default target location for DB creation if we only have CSV
+            db_path = rel_db_path
+
+        if not os.path.exists(db_path) and csv_fallback is None:
             st.error(
-                f"Could not find 'sample_recipes.csv'.\n"
+                f"Could not find 'recipes.db' or fallback 'sample_recipes.csv'.\n"
             )
             return None, None # returning a tuple with two None values (None value is Python's built-in "no value")
-            # for this code snippet we got assistance from the built-in AI in Vs code that makes suggestions. 
-            # Frankly I do not understand fully what it suggested, but I accepted the change as it says it will make error handling more robust. 
 
         # Load and train the clustering model
         print("Loading clustering model...")
-        clusterer = load_clusterer(csv_path, n_clusters=5) # function that calls reads the recipes from the CSV and builds/returns a clustering model object configured for 5 clusters.  
+        clusterer = load_clusterer(db_path=db_path, n_clusters=5, csv_fallback=csv_fallback) # function that reads recipes from SQLite (creating it from CSV fallback if needed) and builds/returns a clustering model object configured for 5 clusters.  
         # variable clusterer will hold the returned model object
 
         if clusterer is None: # failure check
@@ -408,8 +419,7 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
                 st.write("---")
 
         # ____________________
-        # EDUCATIONAL SECTION --> I really like expanders, it makes the website super interactive and professional, so I decided to put an expander explaining how it works. 
-        # it also portays our plan, what we were pursuing when we finally understood what exactly we have to code. This plan was suggested to us by AI in long dialogs to find the best logic for the matching. 
+        # EDUCATIONAL SECTION --> I really like expanders so I decided to put an expander explaining how it works. 
         st.write("### 🥘 How did we cook this website?")
 
         with st.expander("Click if you want to learn more about the algorithm"):
