@@ -374,7 +374,7 @@ if st.session_state.show_results and len(st.session_state.selected_ingredients) 
                     st.metric("💪 Difficulty", recipe['difficulty'].title())
 
                 # Show match score with color coding --> AI assisted - codex vibe coding
-                score_color = "#4CAF50" if recipe['final_score'] > 0.7 else "#FF9800"
+                score_color = "#4CAF50" if recipe['final_score'] > 0.6 else "#FF9800"
                 st.markdown(
                     f"<div style='background: {score_color}; color: white; padding: 8px; "
                     f"border-radius: 6px; text-align: center; font-weight: 600; margin: 8px 0;'>"
