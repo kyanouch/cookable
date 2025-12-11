@@ -372,11 +372,10 @@ st.write(
 )
 
 st.write("")
-st.write("**Meet the team**") # --> https://github.com/adam-p/markdown-here/wiki/markdown-cheatsheet 
-st.image(
-    "https://github.com/kyanouch/cookable/blob/57dc2a9194420ee6fe992562d9124b4f1237064b/cookable-app.py/About_picture.png?raw=true",
-    width=300
-)
+st.write("**Meet the team**") 
+import os as _os
+_img_path = _os.path.join(_os.path.dirname(__file__), "About_picture.png")
+st.image(_img_path, width=300)
 
 # Footer done with HTML and CSS again. Idea suggested in youtube videos. It was vibe coded with AI.
 st.markdown("---")
