@@ -1,5 +1,8 @@
 Project Structure
 
+To run the app run 1_Home.py after installing the packages from the requirements file. 
+
+
 cookable-app/
 │
 ├── 1_Home.py                       # Landing page
